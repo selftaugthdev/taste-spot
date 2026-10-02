@@ -26,10 +26,26 @@ function sharpenGlobeTextures(globe: GlobeMethods): void {
   });
 }
 
+// three-globe's fixed internal sphere radius (not exported publicly, but a
+// stable part of its coordinate system — it's what `altitude` in pointOfView
+// is relative to: world-unit distance from center = radius * (1 + altitude)).
+const GLOBE_RADIUS_UNITS = 100;
+
+// Past this altitude, the single static 4096px texture visibly softens —
+// there's no higher native resolution to sample from, so rather than let
+// pinch/scroll zoom magnify into a blurry mess, this is enforced as a hard
+// floor on both the automatic reveal camera and manual zoom (OrbitControls).
+const DEFAULT_MIN_ZOOM_ALTITUDE = 1.1;
+const DEFAULT_MAX_ZOOM_ALTITUDE = 4;
+
 export interface GlobeSurfaceProps extends MapSurfaceProps {
   /** Self-hosted texture path (e.g. /globe/earth-day.jpg) — the caller picks day/night per theme. */
   globeImageUrl: string;
   backgroundColor?: string;
+  /** Closest the camera (automatic or manual pinch/scroll zoom) is allowed to get. */
+  minZoomAltitude?: number;
+  /** Farthest the camera is allowed to zoom out to. */
+  maxZoomAltitude?: number;
 }
 
 function useContainerSize<T extends HTMLElement>() {
@@ -65,6 +81,8 @@ export function GlobeSurface({
   focus,
   globeImageUrl,
   backgroundColor = "rgba(0,0,0,0)",
+  minZoomAltitude = DEFAULT_MIN_ZOOM_ALTITUDE,
+  maxZoomAltitude = DEFAULT_MAX_ZOOM_ALTITUDE,
 }: GlobeSurfaceProps) {
   const globeRef = useRef<GlobeMethods | undefined>(undefined);
   const { ref: containerRef, size } = useContainerSize<HTMLDivElement>();
@@ -76,18 +94,22 @@ export function GlobeSurface({
 
   useEffect(() => {
     if (!globeRef.current || !focus) return;
-    globeRef.current.pointOfView(
-      { lat: focus.center.lat, lng: focus.center.lng, altitude: focus.altitude },
-      1000,
-    );
-  }, [focus]);
+    // Defensive clamp: even if a caller requests a tighter altitude than the
+    // texture supports, never zoom in further than minZoomAltitude.
+    const altitude = Math.max(minZoomAltitude, focus.altitude);
+    globeRef.current.pointOfView({ lat: focus.center.lat, lng: focus.center.lng, altitude }, 1000);
+  }, [focus, minZoomAltitude]);
 
-  // Frame a pleasant default view once the globe first mounts with real size.
+  // Frame a pleasant default view once the globe first mounts with real size,
+  // and bound manual pinch/scroll zoom to the same range the texture supports.
   useEffect(() => {
     if (hasFramedInitialView.current || !globeRef.current || size.width === 0) return;
     hasFramedInitialView.current = true;
     globeRef.current.pointOfView({ lat: 20, lng: 10, altitude: 2.2 }, 0);
-  }, [size.width]);
+    const controls = globeRef.current.controls();
+    controls.minDistance = GLOBE_RADIUS_UNITS * (1 + minZoomAltitude);
+    controls.maxDistance = GLOBE_RADIUS_UNITS * (1 + maxZoomAltitude);
+  }, [size.width, minZoomAltitude, maxZoomAltitude]);
 
   const arcsData = arc
     ? [
