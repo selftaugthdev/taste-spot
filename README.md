@@ -133,10 +133,12 @@ See `COSTS.md` — updated as each phase adds infrastructure.
 
 ## Credits
 
-The globe texture in `apps/web/public/globe/earth-blue-marble.jpg` is NASA
-Blue Marble imagery (4096×2048), self-hosted here via the example assets
-bundled with the MIT-licensed `three-globe` package — not hotlinked to any
-third-party CDN.
+The globe texture in `apps/web/public/globe/earth-blue-marble.jpg`
+(8192×4096, ~4.3MB) is NASA's public-domain "Blue Marble: Next Generation"
+imagery, downloaded from
+[science.nasa.gov](https://science.nasa.gov/earth/earth-observatory/blue-marble-next-generation/base-map)
+at its full 21600×10800 resolution and downsampled locally to 8192×4096 —
+self-hosted here, not hotlinked to any third-party CDN.
 
 ## Status
 

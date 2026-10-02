@@ -31,11 +31,11 @@ function sharpenGlobeTextures(globe: GlobeMethods): void {
 // is relative to: world-unit distance from center = radius * (1 + altitude)).
 const GLOBE_RADIUS_UNITS = 100;
 
-// Past this altitude, the single static 4096px texture visibly softens —
+// Past this altitude, the single static 8192px texture visibly softens —
 // there's no higher native resolution to sample from, so rather than let
 // pinch/scroll zoom magnify into a blurry mess, this is enforced as a hard
 // floor on both the automatic reveal camera and manual zoom (OrbitControls).
-const DEFAULT_MIN_ZOOM_ALTITUDE = 1.1;
+const DEFAULT_MIN_ZOOM_ALTITUDE = 0.5;
 const DEFAULT_MAX_ZOOM_ALTITUDE = 4;
 
 export interface GlobeSurfaceProps extends MapSurfaceProps {
