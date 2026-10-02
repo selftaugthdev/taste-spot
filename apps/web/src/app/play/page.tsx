@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import dynamic from "next/dynamic";
 import { mockQuestions } from "@twih/site-food";
 import { selectDailyQuestions, useRound } from "@twih/game-core";
@@ -20,25 +20,16 @@ const GlobeSurface = dynamic(() => import("@/components/GlobeSurfaceClient"), {
 const GUESS_COLOR = "#2d9c98"; // accent (teal) — matches theme.dark.accent
 const ANSWER_COLOR = "#22c55e"; // score-great green — unambiguous "this is correct"
 
-function useIsDarkMode(): boolean {
-  const [isDark, setIsDark] = useState(false);
-
-  useEffect(() => {
-    const root = document.documentElement;
-    setIsDark(root.classList.contains("dark"));
-    const observer = new MutationObserver(() => setIsDark(root.classList.contains("dark")));
-    observer.observe(root, { attributes: true, attributeFilter: ["class"] });
-    return () => observer.disconnect();
-  }, []);
-
-  return isDark;
-}
+// Always the bright, true-color Blue Marble texture, regardless of the page's
+// light/dark theme — a night-lights texture looks moody but makes landmasses
+// nearly impossible to make out, which hurts tap accuracy far more than it
+// helps atmosphere. Gameplay legibility wins over matching the page theme.
+const GLOBE_IMAGE_URL = "/globe/earth-blue-marble.jpg";
 
 export default function PlayPage() {
   const todaysQuestions = useMemo(() => selectDailyQuestions(mockQuestions), []);
   const { state, currentQuestion, totalScore, submitGuess, nextQuestion, restart } =
     useRound(todaysQuestions);
-  const isDark = useIsDarkMode();
 
   if (state.phase === "finished") {
     return <EndScreen questions={state.questions} results={state.results} onPlayAgain={restart} />;
@@ -90,7 +81,7 @@ export default function PlayPage() {
           interactive={state.phase === "guessing"}
           onTap={submitGuess}
           focus={focus}
-          globeImageUrl={isDark ? "/globe/earth-night.jpg" : "/globe/earth-day.jpg"}
+          globeImageUrl={GLOBE_IMAGE_URL}
         />
       </div>
 

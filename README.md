@@ -83,8 +83,9 @@ share `apps/web/.next`, and a build while dev is running will corrupt it
 - After the 5th question, the end screen shows the total score, a per-
   question breakdown, a working share button (native share sheet or
   clipboard fallback), and a countdown to the next local-midnight round.
-- Switching light/dark mode on the homepage before playing also swaps the
-  globe's texture (day vs. night) on `/play`.
+- The globe always renders the bright, true-color Blue Marble texture
+  regardless of the page's light/dark theme — a night-lights texture looked
+  moody but made landmasses nearly impossible to tap accurately.
 - This phase's round data is **mock-only** — `sites/food/content/questions.mock.ts`,
   12 placeholder (unverified) questions, deterministically shuffled per
   calendar date. There's no backend yet, so "Play again" just restarts
@@ -132,10 +133,10 @@ See `COSTS.md` — updated as each phase adds infrastructure.
 
 ## Credits
 
-The globe textures in `apps/web/public/globe/` (`earth-day.jpg`,
-`earth-night.jpg`) are NASA Blue/Black Marble imagery, self-hosted here via
-the example assets bundled with the MIT-licensed `three-globe` package — not
-hotlinked to any third-party CDN.
+The globe texture in `apps/web/public/globe/earth-blue-marble.jpg` is NASA
+Blue Marble imagery (4096×2048), self-hosted here via the example assets
+bundled with the MIT-licensed `three-globe` package — not hotlinked to any
+third-party CDN.
 
 ## Status
 
