@@ -1,9 +1,30 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import GlobeGL from "react-globe.gl";
 import type { GlobeMethods } from "react-globe.gl";
 import type { GlobeMark, MapSurfaceProps } from "./types";
+
+/**
+ * react-globe.gl/three-globe load the globe texture with three.js defaults,
+ * which leave anisotropic filtering off (anisotropy: 1). On a sphere that's
+ * viewed at an angle almost everywhere, that makes the texture look noticeably
+ * blurrier than its native resolution once the camera zooms in — and there's
+ * no public prop to configure it, so this reaches into the underlying
+ * three.js scene (the one documented workaround for this library) to turn it
+ * on for every textured material once the globe's texture has loaded.
+ */
+function sharpenGlobeTextures(globe: GlobeMethods): void {
+  const maxAnisotropy = globe.renderer().capabilities.getMaxAnisotropy();
+  globe.scene().traverse((object: unknown) => {
+    const material = (object as { material?: { map?: { anisotropy: number; needsUpdate: boolean } } })
+      .material;
+    if (material?.map) {
+      material.map.anisotropy = maxAnisotropy;
+      material.map.needsUpdate = true;
+    }
+  });
+}
 
 export interface GlobeSurfaceProps extends MapSurfaceProps {
   /** Self-hosted texture path (e.g. /globe/earth-day.jpg) — the caller picks day/night per theme. */
@@ -49,6 +70,10 @@ export function GlobeSurface({
   const { ref: containerRef, size } = useContainerSize<HTMLDivElement>();
   const hasFramedInitialView = useRef(false);
 
+  const handleGlobeReady = useCallback(() => {
+    if (globeRef.current) sharpenGlobeTextures(globeRef.current);
+  }, []);
+
   useEffect(() => {
     if (!globeRef.current || !focus) return;
     globeRef.current.pointOfView(
@@ -85,6 +110,7 @@ export function GlobeSurface({
           height={size.height}
           globeImageUrl={globeImageUrl}
           backgroundColor={backgroundColor}
+          onGlobeReady={handleGlobeReady}
           showAtmosphere
           atmosphereColor="#60a5fa"
           atmosphereAltitude={0.2}

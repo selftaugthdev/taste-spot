@@ -57,7 +57,10 @@ export default function PlayPage() {
         lat: (currentResult.guess.lat + currentQuestion.answer.lat) / 2,
         lng: (currentResult.guess.lng + currentQuestion.answer.lng) / 2,
       },
-      altitude: Math.min(3.2, Math.max(0.8, currentResult.distanceKm / 4000)),
+      // Floor raised from 0.8: the 4096px texture visibly softens past this
+      // zoom level (it's a single static image, not map tiles), so this caps
+      // how close the reveal camera gets rather than magnifying into blur.
+      altitude: Math.min(3.2, Math.max(1.1, currentResult.distanceKm / 4000)),
     };
   }
 
