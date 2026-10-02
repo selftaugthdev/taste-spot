@@ -1,0 +1,16 @@
+{
+  "name": "@twih/site-food",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./config.ts",
+  "types": "./config.ts",
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@twih/site-config": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.3"
+  }
+}

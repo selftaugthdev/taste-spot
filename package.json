@@ -1,0 +1,19 @@
+{
+  "name": "tap-where-it-happened",
+  "private": true,
+  "packageManager": "pnpm@12.8.1",
+  "scripts": {
+    "dev": "pnpm --filter web dev",
+    "dev:food": "SITE_ID=food pnpm --filter web dev",
+    "dev:science": "SITE_ID=science pnpm --filter web dev",
+    "build": "pnpm --filter web build",
+    "build:food": "SITE_ID=food pnpm --filter web build",
+    "build:science": "SITE_ID=science pnpm --filter web build",
+    "lint": "pnpm --filter web lint",
+    "typecheck": "pnpm -r typecheck",
+    "test": "pnpm -r test"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.3"
+  }
+}

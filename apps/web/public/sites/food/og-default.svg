@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <rect width="1200" height="630" fill="#18181b" />
+  <circle cx="600" cy="260" r="110" fill="#d9a521" />
+  <path d="M520 300c0-30 18-52 44-52s44 22 44 52" fill="none" stroke="#18181b" stroke-width="10" stroke-linecap="round" />
+  <text x="600" y="460" font-family="system-ui, sans-serif" font-size="56" font-weight="700" fill="#fafaf9" text-anchor="middle">TasteSpot</text>
+  <text x="600" y="510" font-family="system-ui, sans-serif" font-size="28" fill="#a1a1aa" text-anchor="middle">Tap where it was first made.</text>
+</svg>
