@@ -14,9 +14,11 @@ a Food & Drink edition.
   `apps/web`. It's baked in at build time (`next.config.ts`), so each
   deployed site only ever ships its own config, categories, and assets —
   never another site's.
-- The map interaction itself is behind a `MapSurface` interface in
-  `@twih/game-core` (lands in Phase 2), so a future niche that needs a 2D
-  diagram instead of a 3D globe can plug in without touching game logic.
+- The map interaction itself is behind a `MapSurfaceProps` shape (`marks`,
+  `arc`, `interactive`, `onTap`, `focus`) defined in `@twih/game-core`'s
+  `types.ts`, implemented today by `GlobeSurface` (a 3D globe). A future niche
+  needing a 2D diagram (e.g. anatomy) implements the same prop shape against
+  a flat image instead, and game logic (`useRound`, scoring) never changes.
 
 Score feedback colors (🟩🟨🟧🟥) are **not** part of a site's theme — they're
 fixed tokens in `apps/web/src/app/globals.css` so they read the same
@@ -29,7 +31,7 @@ apps/
   web/                 # the single Next.js app; SITE_ID picks its content/theme
 packages/
   site-config/         # shared TypeScript types for a site config
-  game-core/           # MapSurface interface + scoring (Phase 2)
+  game-core/           # scoring, round state machine, GlobeSurface, daily round, share text
 sites/
   food/                # TasteSpot — config.ts + content/
   science/             # placeholder, Phase 8
@@ -52,7 +54,12 @@ Other useful scripts (from the repo root):
 pnpm build:food       # static export to apps/web/out
 pnpm typecheck        # typecheck every package
 pnpm lint             # lint the Next.js app
+pnpm --filter @twih/game-core test   # scoring/round/share unit tests
 ```
+
+**Don't run `pnpm dev:food` and `pnpm build:food` at the same time** — they
+share `apps/web/.next`, and a build while dev is running will corrupt it
+(restart dev after a build if that happens: `rm -rf apps/web/.next`).
 
 ## What to check in Phase 1
 
@@ -63,6 +70,26 @@ pnpm lint             # lint the Next.js app
   scheme and the choice survives a refresh (stored in `localStorage`).
 - `pnpm build:food` produces a static export in `apps/web/out` with no
   server — confirms the static-export/Cloudflare deployment model works.
+
+## What to check in Phase 2
+
+- `pnpm --filter @twih/game-core test` passes (scoring curve, haversine
+  distance, deterministic daily round, share text — 15 tests).
+- From the homepage, "Play today's round" opens `/play`: a 3D globe loads,
+  the first of 5 question prompts shows at the top.
+- Tapping the globe records a guess, flies the camera to frame both the
+  guess and the correct answer, draws a line between them, and shows a
+  reveal panel with distance, score, and a fun fact.
+- After the 5th question, the end screen shows the total score, a per-
+  question breakdown, a working share button (native share sheet or
+  clipboard fallback), and a countdown to the next local-midnight round.
+- Switching light/dark mode on the homepage before playing also swaps the
+  globe's texture (day vs. night) on `/play`.
+- This phase's round data is **mock-only** — `sites/food/content/questions.mock.ts`,
+  12 placeholder (unverified) questions, deterministically shuffled per
+  calendar date. There's no backend yet, so "Play again" just restarts
+  locally; Phase 3's `get_daily_round`/`submit_guess` RPCs replace this and
+  enforce one play per day.
 
 ## Changing the domain later
 
@@ -103,10 +130,17 @@ you want to.
 
 See `COSTS.md` — updated as each phase adds infrastructure.
 
+## Credits
+
+The globe textures in `apps/web/public/globe/` (`earth-day.jpg`,
+`earth-night.jpg`) are NASA Blue/Black Marble imagery, self-hosted here via
+the example assets bundled with the MIT-licensed `three-globe` package — not
+hotlinked to any third-party CDN.
+
 ## Status
 
 - [x] Phase 1 — setup, multi-site config, static Next.js app, theme system
-- [ ] Phase 2 — core game (globe, round flow, scoring, reveal, share)
+- [x] Phase 2 — core game (globe, round flow, scoring, reveal, share)
 - [ ] Phase 3 — Supabase backend (schema, RLS, RPCs, anon auth, streaks)
 - [ ] Phase 4 — leaderboards, groups, account upgrade
 - [ ] Phase 5 — admin (question editor, scheduler, import/export)

@@ -2,13 +2,14 @@
   "name": "@twih/site-food",
   "version": "0.0.0",
   "private": true,
-  "main": "./config.ts",
-  "types": "./config.ts",
+  "main": "./index.ts",
+  "types": "./index.ts",
   "scripts": {
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@twih/site-config": "workspace:*"
+    "@twih/site-config": "workspace:*",
+    "@twih/game-core": "workspace:*"
   },
   "devDependencies": {
     "typescript": "^5.6.3"

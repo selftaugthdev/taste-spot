@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { siteConfig } from "@/lib/site";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
@@ -16,12 +17,12 @@ export default function HomePage() {
         <p className="text-muted">{siteConfig.tagline}</p>
       </div>
 
-      <button
-        type="button"
-        className="w-full rounded-xl bg-brand px-6 py-4 text-lg font-semibold text-brand-foreground shadow-sm transition-transform active:scale-[0.98]"
+      <Link
+        href="/play"
+        className="block w-full rounded-xl bg-brand px-6 py-4 text-center text-lg font-semibold text-brand-foreground shadow-sm transition-transform active:scale-[0.98]"
       >
         Play today&apos;s round
-      </button>
+      </Link>
 
       <div className="w-full rounded-xl border border-border bg-surface p-4">
         <p className="mb-3 text-sm font-medium text-muted">Score feedback (fixed, not brand-dependent)</p>
